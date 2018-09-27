@@ -1,0 +1,154 @@
+<template>
+    <div class="login-screen" >
+        <div class="page no-navbar no-toolbar no-swipeback">
+            <div class="page-content login-screen-content" style="background-image: url(./assets/img/background.jpg);background-color: #cccccc; /* Used if the image is unavailable */
+  height: 100%; 
+   width: 100%;/* You must set a specified height */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
+">
+                <div class="setting">
+                    <a href="#" class="item-link popover-open" data-popover=".popover-settings">
+                        <i class="fal fa-ellipsis-v"></i>
+                    </a>
+                </div>
+                <div class="login">
+                    <div class="login-screen-title"></div>
+                    <form id="login" method="POST" class="form-ajax-submit">
+                        <div class="list">
+                            <ul>
+                                <li class="item-content item-input">
+                                    <div class="item-inner">
+                                        <div class="item-title item-label"></div>
+                                        <div class="item-input-wrap" style="background: #eee">
+                                            <input type="text" name="username" class="validate" placeholder=" Username" />
+                                            <span class="input-clear-button"></span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="item-content item-input">
+                                    <div class="item-inner">
+                                        <div class="item-title item-label"></div>
+                                        <div class="item-input-wrap" style="background: #eee">
+                                            <input type="password" name="password" class="validate" placeholder=" Password">
+                                            <span class="input-clear-button"></span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="item-content item-input">
+                                    <div class="item-inner">
+                                        <button @click="login" class="button button-raised button-fill" type="submit">Login</button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="popover popover-settings">
+            <div class="popover-inner">
+                <div class="list">
+                    <ul>
+                        <li>
+                            <a href="#" class="list-button item-link open-popover-setting-ip-address">Setting IP</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="popover popover-setting-ip-address">
+            <div class="popover-inner">
+                <div class="block-title title-setting-ip-address">SETTING IP ADDRESS</div>
+                <form class="list inline-labels form-ajax-submit" id="form-ip-address" method="POST">
+                    <ul>
+                        <li class="item-content item-input">
+                            <div class="item-inner">
+                                <div class="item-title item-label">IP ADDRESS</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" id="set_ip_address" name="set_ip_address" placeholder="ex. 192.0.0.1" />
+                                    <span class="input-clear-button"></span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content item-input">
+                            <div class="item-inner">
+                                <button @click="ip_address" class="button button-raised button-fill" type="submit">SUBMIT</button>
+                            </div>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style>
+
+    .login{
+        margin: 0 auto;
+        position: absolute;
+        top: 50%;
+        width: 90%;
+        transform: translate(5%, -50%);
+    }
+    
+    .setting a{
+        position: absolute;
+        font-size: 18px;
+        text-align: center;
+        width: 5%;
+        z-index: 1500;
+        float: right;
+        top: 15px;
+        right: 15px;
+    }
+</style>
+
+<script> 
+    return {
+        data: function () {
+            return {
+                title: 'FAJARHIDAYAH',
+            }
+        },
+        methods: {
+            login: function () {
+                app.dialog.preloader();
+                var username = $$('#login [name="username"]').val();
+                var password = $$('#login [name="password"]').val();
+                
+                // alert(username)
+                // alert(password)
+                app.request.post(path_api + 'login.php?mode=login', { username: username, password: password }, function (data) {
+                    app.dialog.close();
+                   // console.log(data);
+                    obj_data = JSON.parse(data);
+                    
+                    if (obj_data.error == false) {
+                        Login(obj_data.data, username);
+                    } else {
+                        app.dialog.alert(obj_data.message, "Warning");
+                    }
+                }, function () {
+                    notConnected();
+                });
+            },
+            ip_address: function () {
+                app.dialog.password('Masukan password', 'ABSEN MASUK', function (password) {
+                    if(password == "sinergics"){
+                        var form_data = app.form.convertToData('#form-ip-address');
+                        
+                        localStorage.setItem("ip_address", form_data.set_ip_address);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 60);
+                    }else{
+                        app.dialog.alert("Password salah!, hubungi developer.");
+                    }
+                });  
+            }
+        },
+    }
+</script>

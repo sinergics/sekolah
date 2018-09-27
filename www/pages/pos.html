@@ -1,0 +1,161 @@
+<template>
+    <div class="page" data-name="pos">
+        <div class="navbar">
+            <div class="navbar-inner sliding">
+                <div class="left">
+                    <a href="#" class="link back">
+                        <i class="far fa-arrow-left"></i>
+                    </a>
+                </div>
+                <div class="title">{{ title }}</div>
+                <div class="right">
+                    <a href="#" @click="openDaftarPesanan" class="link tab-link">
+                        <i class="far fa-shopping-cart"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="toolbar tabbar">
+            <div class="toolbar-inner">
+                <a href="#tab-menu" class="tab-link tab-link-active">MENU</a>
+                <a href="#tab-transaksi" class="tab-link">TRANSAKSI</a>
+            </div>
+        </div>
+        <div class="tabs-swipeable-wrap">
+            <div class="tabs">
+                <div id="tab-menu" class="page-content tab tab-active">
+                    <div class="menu-kategori">
+                        <ul id="menu-kategori" class="menu-kategori">
+                            
+                        </ul>
+                        <div id="menu-makanan" class="menu-makanan">
+                            <div id="row" class="row">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-transaksi" class="page-content tab">
+                    <div class="toolbar calendar-toolbar color-theme-white no-shadow">
+                        <div class="toolbar-inner">
+                            <div class="left">
+                                <a href="#" @click="previousDate" class="link icon-only">
+                                    <i class="far fa-arrow-left"></i>
+                                </a>
+                            </div>
+                            <div class="center" style="text-align: center">
+                                <input type="text" readonly="readonly" class="calendar-input" id="calendar-pos-penjualan" />
+                            </div>
+                            <div class="right">
+                                <a href="#" @click="nextDate" class="link icon-only">
+                                    <i class="far fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-scrollable">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="numeric-cell" width="20">NO</th>
+                                    <th class="label-cell">NOMOR STRUK</th>
+                                    <th class="numeric-cell" width="80">TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody id="body-transaksi">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="fab fab-right-bottom">
+            <a href="/popover-pelanggan-baru/">
+                <i class="fal fa-plus"></i>
+            </a>
+        </div>
+    </div>
+</template>
+
+<style>
+    .md .fab > a, .md .fab-buttons a {
+        width: 48px;
+        height: 48px;
+    }
+</style>
+
+<script>
+    var tanggal = '';
+    return {
+        data: function () {
+            return {
+                title: 'POS'
+            }
+        },
+        methods: {
+            openDaftarPesanan: function () {
+                router.navigate("/popup-daftar-struk/" + localStorage.getItem("id_penjualan") + "/");
+            },
+            previousDate: function () {
+                this.tanggal = new Date(addTanggal(this.tanggal, -1));
+                $$("#calendar-pos-penjualan").val(getTanggal(this.tanggal));
+                viewSale(setTanggal(this.tanggal));
+            },
+            nextDate: function () {
+                this.tanggal = new Date(addTanggal(this.tanggal, 1));
+                $$("#calendar-pos-penjualan").val(getTanggal(this.tanggal));
+                viewSale(setTanggal(this.tanggal));;
+            }
+        },
+        on: {
+            pageInit: function (e, page) {
+                this.tanggal = new Date();
+                $$("#calendar-pos-penjualan").val(getTanggal(this.tanggal));
+                viewSale(setTanggal(this.tanggal));
+
+                $$("#calendar-pos-penjualan").on("change", function () {
+                    this.tanggal = new Date($$("#calendar-pos-penjualan").val());
+                    $$("#calendar-pos-penjualan").val(getTanggal(this.tanggal));
+                    viewSale(setTanggal(this.tanggal));
+                });
+
+                $$(".menu-kategori li").on("click", function () {
+                    $$(".menu-kategori li").removeClass("active"), $$(this).addClass("active")
+                });
+            },
+            pageMounted: function (e, page) {
+                app.dialog.preloader();
+                app.request.get(path_api + 'pos.php?mode=menu_kategori', function (data) {
+                    app.dialog.close();
+                    obj_menu_kategori = JSON.parse(data);
+                    $.each(obj_menu_kategori, function (index, row_menu_kategori) {
+                        if (row_menu_kategori.no == 1) {
+                            $$("#menu-kategori").append('<li id="kategori_' + row_menu_kategori.kode_kategori + '" class="active">' + row_menu_kategori.nama_kategori + '</li>');
+                        } else {
+                            $$("#menu-kategori").append('<li id="kategori_' + row_menu_kategori.kode_kategori + '">' + row_menu_kategori.nama_kategori + '</li>');
+                        }
+
+                        $$("#kategori_" + row_menu_kategori.kode_kategori).on("click", function () {
+                            $$("#row").empty();
+                            viewMenu(row_menu_kategori.kode_kategori);
+                        });
+                    });
+                    viewMenu();
+                }, function () {
+                    notConnected();
+                });
+            },
+            pageBeforeIn: function (e, page) {
+                var caledarPenjualan = app.calendar.create({
+                    inputEl: '#calendar-pos-penjualan',
+                    openIn: 'customModal',
+                    footer: true
+                });
+            },
+            pageAfterOut: function (e, page) {
+                localStorage.removeItem("id_penjualan");
+            },
+        }
+    }
+</script>

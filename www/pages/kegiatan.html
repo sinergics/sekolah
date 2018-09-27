@@ -1,0 +1,119 @@
+<template>
+    <div class="page" data-name="more">
+        <div class="navbar">
+            <div class="navbar-inner sliding">
+                <div class="left">
+                    <a href="#" class="link back">
+                        <i class="far fa-arrow-left"></i>
+                    </a>
+                </div>
+                            <div class="title sliding">KEGIATAN</div>
+            </div>
+        </div>
+        
+        <div class="page-content" style="padding-top: 9px;">
+          
+<div class="block block-strong no-padding">
+  <div id="demo-calendar-inline-container"></div>
+</div>
+
+        </div>
+         <div class="toolbar tabbar-labels">
+    <div class="toolbar-inner" style="border-right: 1px solid #c6c6c6;border-top: 1px solid #c6c6c6;border-left: 1px solid #c6c6c6;">
+      <a href="/profile/" class="tab-link" style="border-right: 1px solid #c6c6c6;">
+        <!-- Different icons for iOS and MD themes -->
+        <i class="icon f7-icons ios-only">bell</i>
+        <i class="icon material-icons md-only">bell</i>
+        <!-- Label text -->
+        <span class="tabbar-label" >INFO</span>
+      </a>
+      <a href="#tab-3" class="tab-link" style="border-right: 1px solid #c6c6c6;">
+        <i class="icon f7-icons ios-only">book_fill</i>
+        <i class="icon material-icons md-only">book_fill</i>
+        <span class="tabbar-label">ABSENSI</span>
+      </a>
+      <a href="#tab-3" class="tab-link" style="border-right: 1px solid #c6c6c6;">
+        <i class="icon f7-icons ios-only">calendar</i>
+        <i class="icon material-icons md-only">calendar</i>
+        <span class="tabbar-label">KEGIATAN</span>
+      </a>
+        <a href="#tab-3" class="tab-link" style="border-right: 1px solid #c6c6c6;">
+        <i class="icon f7-icons ios-only">photos_fill</i>
+        <i class="icon material-icons md-only">photos_fill</i>
+        <span class="tabbar-label">GALLERY</span>
+      </a>
+        <a href="/more/" class="tab-link tab-link-active">
+        <i class="icon f7-icons ios-only">graph_square</i>
+        <i class="icon material-icons md-only">graph_square</i>
+        <span class="tabbar-label"><i class="icon f7-icons ios-only">more</i></span>
+      </a>
+    </div>
+  </div>
+    </div>
+</template>
+
+<script>
+    return {
+        data: function () {
+            return {
+                title: 'PROFILE',
+            }
+        },
+        mounted: function () {
+        var $$ = Dom7;
+var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August' , 'September' , 'October', 'November', 'December'];var now = new Date();
+var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+var weekLater = new Date().setDate(today.getDate() + 7);
+var calendarInline = app.calendar.create({
+  containerEl: '#demo-calendar-inline-container',
+  value: [new Date()],
+  weekHeader: false,
+  events: [
+      {
+        from: today,
+        to: today,
+            title: 'Meeting with Vladimir',
+
+      },
+      //- more events this day
+      {
+        date: today,
+        color: '#ff0000'
+      },
+      {
+        date: today,
+        color: '#00ff00'
+      },
+    ],
+
+  renderToolbar: function () {
+    return '<div class="toolbar calendar-custom-toolbar no-shadow">' +
+      '<div class="toolbar-inner">' +
+        '<div class="left">' +
+          '<a href="#" class="link icon-only"><i class="icon icon-back ' + (app.theme === 'md' ? 'color-black' : '') + '"></i></a>' +
+        '</div>' +
+        '<div class="center"></div>' +
+        '<div class="right">' +
+          '<a href="#" class="link icon-only"><i class="icon icon-forward ' + (app.theme === 'md' ? 'color-black' : '') + '"></i></a>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  },
+  on: {
+    init: function (c) {
+      $$('.calendar-custom-toolbar .center').text(monthNames[c.currentMonth] +', ' + c.currentYear);
+      $$('.calendar-custom-toolbar .left .link').on('click', function () {
+        calendarInline.prevMonth();
+      });
+      $$('.calendar-custom-toolbar .right .link').on('click', function () {
+        calendarInline.nextMonth();
+      });
+    },
+    monthYearChangeStart: function (c) {
+      $$('.calendar-custom-toolbar .center').text(monthNames[c.currentMonth] +', ' + c.currentYear);
+    }
+  }
+});
+        }
+    }
+</script>

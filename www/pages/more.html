@@ -1,0 +1,118 @@
+<template>
+    <div class="page" data-name="more">
+        <div class="navbar">
+            <div class="navbar-inner sliding">
+                <div class="left">
+                    <a href="#" class="link back">
+                        <i class="far fa-arrow-left"></i>
+                    </a>
+                </div>
+                            <div class="title sliding">Fajar Hidayah</div>
+            </div>
+        </div>
+        
+        <div class="page-content" style="padding-top: 82px;">
+            <div class="container">
+              
+<fieldset style="background: white;">
+                <div class="menu text-align-center">
+                        <div class="row">
+                            <div class="col-50">
+                                <a href="/profile/" class="entry">
+                                    <i class="fal fa-id-card"></i>
+                                    <h5>PROFIL</h5>
+                                </a>
+                            </div>
+                            <div class="col-50">
+                                <a href="/pos/" class="entry">
+                                    <i class="fal fa-calculator"></i>
+                                    <h5>POS</h5>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-50">
+                                <a href="/laporan/" class="entry">
+                                    <i class="fal fa-chart-bar"></i>
+                                    <h5>LAPORAN</h5>
+                                </a>
+                            </div>
+                            <div class="col-50">
+                                <a href="/berita/" class="entry ">
+                                    <i class="fal fa-newspaper "></i>
+                                    <h5>BERITA</h5>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-50">
+                                <a href="/absen/" class="entry">
+                                    <i class="fal fa-calendar-check"></i>
+                                    <h5>ABSEN</h5>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    </fieldset>
+            </div>
+        </div>
+         <div class="toolbar tabbar-labels">
+    <div class="toolbar-inner" style="border-right: 1px solid #c6c6c6;border-top: 1px solid #c6c6c6;border-left: 1px solid #c6c6c6;">
+      <a href="/profile/" class="tab-link" style="border-right: 1px solid #c6c6c6;">
+        <!-- Different icons for iOS and MD themes -->
+        <i class="icon f7-icons ios-only">bell</i>
+        <i class="icon material-icons md-only">bell</i>
+        <!-- Label text -->
+        <span class="tabbar-label" >INFO</span>
+      </a>
+      <a href="#tab-3" class="tab-link" style="border-right: 1px solid #c6c6c6;">
+        <i class="icon f7-icons ios-only">book_fill</i>
+        <i class="icon material-icons md-only">book_fill</i>
+        <span class="tabbar-label">ABSENSI</span>
+      </a>
+      <a href="#tab-3" class="tab-link" style="border-right: 1px solid #c6c6c6;">
+        <i class="icon f7-icons ios-only">calendar</i>
+        <i class="icon material-icons md-only">calendar</i>
+        <span class="tabbar-label">KEGIATAN</span>
+      </a>
+        <a href="#tab-3" class="tab-link" style="border-right: 1px solid #c6c6c6;">
+        <i class="icon f7-icons ios-only">photos_fill</i>
+        <i class="icon material-icons md-only">photos_fill</i>
+        <span class="tabbar-label">GALLERY</span>
+      </a>
+        <a href="/more/" class="tab-link tab-link-active">
+        <i class="icon f7-icons ios-only">graph_square</i>
+        <i class="icon material-icons md-only">graph_square</i>
+        <span class="tabbar-label"><i class="icon f7-icons ios-only">more</i></span>
+      </a>
+    </div>
+  </div>
+    </div>
+</template>
+
+<script>
+    return {
+        data: function () {
+            return {
+                title: 'PROFILE',
+            }
+        },
+        mounted: function () {
+            app.dialog.preloader();
+            app.request.get(path_api + 'profile.php?mode=profile', function (data) {
+                app.dialog.close();
+                obj_profile = JSON.parse(data);
+                $.each(obj_profile.data, function (index, row_profile) {
+                    var image = path_server + 'monitoring/files/outlet/logo/' + row_profile.logo;
+                    $$("#outlet").val(row_profile.outlet);
+                    $$("#logo").attr("src", image);
+                    $$("#lokasi").val(row_profile.nama_kota);
+                    $$("#pic").val(row_profile.pengelola);
+                    $$("#telp").val(row_profile.telp);
+                });
+            }, function () {
+                notConnected();
+            });
+        }
+    }
+</script>

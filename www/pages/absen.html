@@ -1,0 +1,99 @@
+<template>
+    <div class="page" data-name="berita">
+        <div class="navbar">
+            <div class="navbar-inner sliding">
+                <div class="left">
+                    <a href="/" data-force="true" data-ignore-cache="true" class="link back">
+                        <i class="far fa-arrow-left"></i>
+                    </a>
+                </div>
+                <div class="title">{{ title }}</div>
+                <div class="right">
+                    <a href="/input-absen/" class="link icon-only">
+                        <i class="far fa-calendar-plus"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="page-content">
+            <div class="toolbar calendar-toolbar color-theme-white no-shadow">
+                <div class="toolbar-inner">
+                    <div class="left">
+                        <a href="#" @click="previousDate" class="link icon-only">
+                            <i class="far fa-arrow-left"></i>
+                        </a>
+                    </div>
+                    <div class="center" style="text-align: center">
+                        <input type="text" readonly="readonly" class="calendar-input" id="calendar-absen" />
+                    </div>
+                    <div class="right">
+                        <a href="#" @click="nextDate" class="link icon-only">
+                            <i class="far fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="table-scrollable">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th width="20" rowspan="2">NO</th>
+                            <th rowspan="2">Nama</th>
+                            <th colspan="2">Jam</th>
+                        </tr>
+                        <tr>
+                            <th width="50">Masuk</th>
+                            <th width="50">Pulang</th>
+                        </tr>
+                    </thead>
+                    <tbody id="body-absen">
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    var tanggal= '';
+    return {
+        data: function () {
+            return {
+                title: 'ABSEN',
+            }
+        },
+        methods: {
+            previousDate: function () {
+                this.tanggal = new Date(addTanggal(this.tanggal, -1));
+                $$("#calendar-absen").val(getTanggal(this.tanggal));
+                viewAbsen(setTanggal(this.tanggal));
+            },
+            nextDate: function () {
+                this.tanggal = new Date(addTanggal(this.tanggal, 1));
+                $$("#calendar-absen").val(getTanggal(this.tanggal));
+                viewAbsen(setTanggal(this.tanggal));;
+            }
+        },
+        on: {
+            pageInit: function (e, page) {
+                this.tanggal = new Date();
+                $$("#calendar-absen").val(getTanggal(this.tanggal));
+                viewAbsen(setTanggal(this.tanggal));
+                
+                $$("#calendar-absen").on("change", function () {
+                    this.tanggal = new Date($$("#calendar-absen").val());
+                    $$("#calendar-absen").val(getTanggal(this.tanggal));
+                    viewAbsen(setTanggal(this.tanggal));
+                });
+            },
+            pageBeforeIn: function (e, page) {
+                var calendarLaporan = app.calendar.create({
+                    inputEl: '#calendar-absen',
+                    openIn: 'customModal',
+                    footer: true
+                });
+            },
+        }
+    }
+</script>

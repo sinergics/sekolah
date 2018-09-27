@@ -1,0 +1,200 @@
+<template>
+	<div class="page" data-name="berita">
+		<div class="navbar">
+
+			<div class="navbar-inner sliding">
+				<div class="left">
+					<a href="#" class="link back" style="color: white;">
+						<i class="far fa-arrow-left"></i>
+					</a>
+				</div>
+				<div class="title">INFO</div>
+			</div>
+
+		</div>
+		<div class="toolbar tabbar-labels">
+			<div class="toolbar-inner" style="border-right: 1px solid #c6c6c6;border-top: 1px solid #c6c6c6;border-left: 1px solid #c6c6c6;">
+				<a href="/berita/" class="tab-link tab-link-active" style="border-right: 1px solid #c6c6c6;">
+					<!-- Different icons for iOS and MD themes -->
+					<i class="icon f7-icons ios-only">bell</i>
+					<i class="icon material-icons md-only">bell</i>
+					<!-- Label text -->
+					<span class="tabbar-label" >INFO</span>
+				</a>
+				<a href="#tab-3" class="tab-link" style="border-right: 1px solid #c6c6c6;">
+					<i class="icon f7-icons ios-only">book_fill</i>
+					<i class="icon material-icons md-only">book_fill</i>
+					<span class="tabbar-label">ABSENSI</span>
+				</a>
+				<a href="#tab-3" class="tab-link" style="border-right: 1px solid #c6c6c6;">
+					<i class="icon f7-icons ios-only">calendar</i>
+					<i class="icon material-icons md-only">calendar</i>
+					<span class="tabbar-label">KEGIATAN</span>
+				</a>
+				<a href="#tab-3" class="tab-link" style="border-right: 1px solid #c6c6c6;">
+					<i class="icon f7-icons ios-only">photos_fill</i>
+					<i class="icon material-icons md-only">photos_fill</i>
+					<span class="tabbar-label">GALLERY</span>
+				</a>
+				<a href="/more/" class="tab-link">
+					<i class="icon f7-icons ios-only">graph_square</i>
+					<i class="icon material-icons md-only">graph_square</i>
+					<span class="tabbar-label"><i class="icon f7-icons ios-only">more</i></span>
+				</a>
+			</div>
+		</div>
+
+
+		<div class="page-content">
+			<div class="toolbar tabbar">
+				<div class="toolbar-inner">
+					<a href="#tab-1" class="tab-link tab-link-active">BERITA</a>
+					<a href="#tab-2" class="tab-link">PENGUMUMAN</a>
+
+				</div>
+			</div>
+			<div class="tabs-swipeable-wrap">
+
+				<div class="tabs">
+					<div id="tab-1" class="page-content tab tab-active">
+						<div class="blog">
+							<div id="berita" class="container">
+								
+							</div>
+						</div>
+					</div>
+					<div id="tab-2" class="page-content tab">
+						<div class="blog">
+							<div id="pengumuman" class="container">
+								
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+
+
+
+
+
+
+	</div>
+</template>
+
+<style>
+.blog{
+	position:relative
+}
+.blog .entry{
+	margin-bottom:30px;
+	border:1px solid #eee
+}
+.blog .entry img{
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 100%;
+}
+.blog .entry .user-date{
+	padding:0 15px
+}
+.blog .entry .content{
+	padding:0 15px 20px
+}
+.blog .entry .user-date ul{
+	list-style:none;
+	padding:0
+}
+.blog .entry .user-date ul li{
+	display:inline-block;
+	margin-right:12px
+}
+.blog .entry .user-date ul li a i{
+	margin-right:6px;
+	color:#f44336
+}
+.blog .pagination ul{
+	margin-top:40px;
+	list-style:none;
+	text-align:center
+}
+.blog .pagination ul li{
+	display:inline-block;
+	background:#f3f3f3;
+	margin:0 5px;
+	padding:5px 10px
+}
+.blog .pagination ul .active{
+	background:#f44336;
+	color:#fff;
+	border-color:#f44336
+}
+.blog .pagination ul .active a{
+	color:#fff
+}
+</style>
+
+<script>
+	return {
+		data: function () {
+			return {
+				title: 'BERITA',
+			}
+		},
+		on: {
+			pageInit: function (e, page) {
+				app.request.get(path_api + 'berita.php', { mode: 'lihat_berita' }, function (data) {
+					obj_berita = JSON.parse(data);
+					$.each(obj_berita.data, function (index, row_berita) {
+						var cover = path_server + 'files/berita/foto/' + row_berita.fotoBerita;
+						
+						$$("#berita").append(
+							'<div class="entry">' +
+							'<img src="' + cover + '" alt="' + row_berita.judulBerita + '">' +
+							'<div class="user-date">' +
+							'<ul>' +
+							'<li><a href="#"><i class="fas fa-user"></i>' + row_berita.author + '</a></li>' +
+							'<li><a href="#"><i class="fas fa-clock"></i> ' + getTanggal(row_berita.tanggalBerita) + '</a></li>' +
+							'</ul>' +
+							'</div>' +
+							'<div class="content">' + 
+							'<h5><a href="#">' + row_berita.judulBerita + '</a></h5>' +
+							'<p style="color:black">' + row_berita.resumeBerita + '</p>' +
+							'<button id="more_' + row_berita.idBerita + '" class="button button-raised button-fill">Read More</button>' +
+							'</div>' +
+							'</div>');
+						
+						$$("#more_" + row_berita.idBerita).on("click", function () {
+							router.navigate('/popup-detail-berita/' + row_berita.idBerita + '/');
+						});
+					});
+				});
+				app.request.get(path_api + 'pengumuman.php', { mode: 'lihat_pengumuman' }, function (data) {
+					obj_berita = JSON.parse(data);
+					$.each(obj_berita.data, function (index, row_pengumuman) {
+						var cover = path_server + 'styles/images/'+ row_pengumuman.statusPengumuman + '.png';
+						
+						$$("#pengumuman").append(
+							'<div class="entry">' +
+							
+							'<div class="content" style="border: 1px solid #e0e0e0;background-color:white;>' + 
+
+							'<h5 style="color:black"><br><img src="' + cover + '" alt="' + row_pengumuman.judulPengumuman + '">&nbsp;<a href="#" style="color:black;"><font size="4"><b>' + row_pengumuman.judulPengumuman + '</a></b></font></h5><br>' +
+							'<div style="color:black">Tanggal    :Minggu , 15 Juli 2018</div>' +		
+							'<div style="color:black">Tanggal    :Minggu , 15 Juli 2018</div>' +		
+							'<div style="color:black">Tanggal    :Minggu , 15 Juli 2018</div>' +	
+							'<p style="color:black">' + row_pengumuman.resumePengumuman + '</p>' +
+							
+							'</div>' +
+							'</div>');
+						
+						
+					});
+				});
+
+			},
+		}
+	}
+</script>

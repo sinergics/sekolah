@@ -1,0 +1,206 @@
+<template>
+    <div class="popup daftar-pesanan">
+        <div class="view">
+            <div class="page">
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        <div class="left">
+                            <a href="#" class="link popup-close">
+                                <i class="far fa-arrow-left" title="Kembali"></i>
+                            </a>
+                        </div>
+                        <div class="title">{{ title }}</div>
+                        <div class="right">
+                            <a href="#" @click="printStruk" class="link">
+                                <i class="far fa-print" style="font-size: 14px" title="Print Struk" ></i>
+                            </a>
+                            <a href="#" @click="pilihStruk" class="link">
+                                <i class="far fa-check" title="Pilih Struk"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-content">
+                    <form class="list form-ajax-submit" id="detail-pelanggan">
+                        <ul>
+                            <div class="row">
+                                <div class="col-50">
+                                    <li class="item-content item-input">
+                                        <div class="item-inner">
+                                            <div class="item-title item-label">NO. STRUK</div>
+                                            <div class="item-input-wrap">
+                                                <input type="text" name="nomor_struk" readonly />
+                                            </div>
+                                        </div>
+                                    </li>
+                                </div>
+                                <div class="col-50">
+                                    <li class="item-content item-input">
+                                        <div class="item-inner">
+                                            <div class="item-title item-label">TANGGAL</div>
+                                            <div class="item-input-wrap">
+                                                <input type="text" name="tgl_transaksi" readonly />
+                                            </div>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-60">
+                                    <li class="item-content item-input">
+                                        <div class="item-inner">
+                                            <div class="item-title item-label">NAMA</div>
+                                            <div class="item-input-wrap">
+                                                <input type="text" name="pelanggan" readonly/>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </div>
+                                <div class="col-40">
+                                    <li class="item-content item-input">
+                                        <div class="item-inner">
+                                            <div class="item-title item-label">MEJA</div>
+                                            <div class="item-input-wrap">
+                                                <input type="text" name="meja" readonly/>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </ul>
+                    </form>
+                    <div class="table-scrollable">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th width="20">NO</th>
+                                    <th>PESANAN</th>
+                                    <th width="50">HARGA</th>
+                                </tr>
+                            </thead>
+                        </table>
+                        <div class="list-block" style="border: 1px solid #e7ecf1;">
+                            <ul id="struk-list">
+                                
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    return {
+        data: function () {
+            return {
+                title: 'Daftar Struk',
+                id_penjualan: this.$route.params.sale
+            }
+        },
+        mounted: function () {
+            app.dialog.preloader();
+            $$("#struk-list").empty();
+            app.request.get(path_api + 'pos.php', { mode: 'lihat_struk', id_penjualan: this.id_penjualan }, function (data) {
+                app.dialog.close();
+                obj_struk = JSON.parse(data);
+                app.form.fillFromData('#detail-pelanggan', obj_struk.data[0]);
+
+                $.each(obj_struk.data.detail, function (index, row_struk) {
+                    $$("#struk-list").append(
+                        '<li class="swipeout rTable">' +
+                        '<div class="swipeout-content rTableRow">' +
+                        '<div class="rTableCell" align="right">&nbsp;&nbsp;' + addNol(row_struk.no) + '.</div>' +
+                        '<div class="rTableCell" style="width:100%">&nbsp;&nbsp;' + row_struk.menu + ' x ' + row_struk.jumlah + '</div>' +
+                        '<div class="rTableCell">' + getAngka(row_struk.harga) + '</div>' +
+                        '</div>' +
+                        '</li>'
+                    );
+                });
+            }, function () {
+                app.dialog.close();
+                app.dialog.alert("Tidak dapat terhubung dengan server.", "Warning", function () {
+                    router.back();
+                });
+            });
+        },
+        methods: {
+            printStruk: function () {
+                var listPorts = function () {
+                    bluetoothSerial.list(
+                        function (results) {
+                            for (var i = results.length - 1; i >= 0; i--) {
+                                var macAddress = results[i].address;
+                            }
+                            bluetoothSerial.connect(macAddress, printStruk, showError);
+                        },
+                        function (error) {
+                            myApp.alert(JSON.stringify(error));
+                        });
+                }
+
+                var notEnabled = function () {
+                    myApp.alert("Bluetooth is not enabled.")
+                }
+
+                var showError = function (error) {
+                    alert("Error " + error);
+                }
+
+                var printStruk = function () {
+                    var struk;
+                    app.request.get(path_api + 'pos.php', { mode: 'header_struk', id_penjualan: this.id_penjualan }, function (data) {
+                        obj = JSON.parse(data);
+                        $.each(obj, function (index, row_header) {
+                            struk = "---------------------------------\r\n";
+                            struk += "        MI KOCOK MG BOGOR       \r\n";
+                            struk += "--------------------------------\r\n";
+                            struk += "Nomor Struk :" + row_header.nomor_struk + "\r\n";
+                            struk += "Nama        :" + row_header.pelanggan + "\r\n";
+                            struk += "Meja        :" + row_header.meja + "\r\n";
+                            struk += "Nama        :" + row_header.tgl_transaksi + "\r\n";
+                            struk += "--------------------------------\r\n";
+                        });
+                        app.request.get(path_api + 'pos.php', { mode: 'lihat_struk', id_penjualan: this.id_penjualan }, function (data_struk) {
+                            var total = 0;
+                            obj_view = JSON.parse(data_struk);
+                            $.each(obj_view, function (index, row_struk) {
+                                struk += row_struk.no + ". " + row_struk.menu + "\r\n";
+                                struk += "   " + row_struk.jumlah + " x " + row_struk.harga + " = " + row_struk.total + "\r\n";
+                                total = parseInt(total) + parseInt(row_struk.total);
+                            });
+                            struk += "Total       = " + total + "\r\n";
+                            struk += "--------------------------------\r\n";
+                            struk += "          TERIMA KASIH          \r\n";
+                            struk += "--------------------------------\r\n\r\n\r\n";
+                            bluetoothSerial.write(struk);
+                            bluetoothSerial.disconnect();
+                        }, function () {
+                            app.dialog.close();
+                            app.dialog.alert("Tidak dapat terhubung dengan server.", "Warning", function () {
+                                router.back();
+                            });
+                        }); 
+                    }, function () {
+                        app.dialog.close();
+                        app.dialog.alert("Tidak dapat terhubung dengan server.", "Warning", function () {
+                            router.back();
+                        });
+                    }); 
+                }
+
+                bluetoothSerial.isEnabled(listPorts, notEnabled);
+            },
+
+            pilihStruk: function () {
+                localStorage.setItem("id_penjualan", this.id_penjualan);
+                app.popup.close();
+                router.navigate(router.currentRoute.url, {
+                    ignoreCache: true,
+                    reloadCurrent: true
+                });
+            }
+        },
+    }
+</script>

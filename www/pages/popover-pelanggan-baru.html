@@ -1,0 +1,137 @@
+<template>
+    <div class="popover popover-pelanggan-baru">
+        <div class="popover-inner">
+            <div class="block-title title-pelanggan-baru">{{ title }}</div>
+            <form class="list form-ajax-submit" id="form-pelanggan-baru" method="POST">
+                <ul>
+                    <div class="row">
+                        <div class="col-50">
+                            <li class="item-content item-input">
+                                <div class="item-inner">
+                                    <div class="item-title item-label">NO. STRUK</div>
+                                    <div class="item-input-wrap">
+                                        <input type="text" name="no_struk_baru" readonly />
+                                    </div>
+                                </div>
+                            </li>
+                        </div>
+                        <div class="col-50">
+                            <li class="item-content item-input">
+                                <div class="item-inner">
+                                    <div class="item-title item-label">TANGGAL</div>
+                                    <div class="item-input-wrap">
+                                        <input type="text" name="tgl_transaksi_baru" readonly />
+                                    </div>
+                                </div>
+                            </li>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-60">
+                            <li class="item-content item-input">
+                                <div class="item-inner">
+                                    <div class="item-title item-label">NAMA</div>
+                                    <div class="item-input-wrap">
+                                        <input type="text" name="nama" />
+                                    </div>
+                                </div>
+                            </li>
+                        </div>
+                        <div class="col-40">
+                            <li class="item-content item-input">
+                                <div class="item-inner">
+                                    <div class="item-title item-label">MEJA</div>
+                                    <div class="item-input-wrap">
+                                        <select id="meja" name="meja">
+                                            <option value=""> </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </li>
+                        </div>
+                    </div>
+                    <li class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-title item-label">NO. HP</div>
+                            <div class="item-input-wrap">
+                                <input type="number" name="no_hp">
+                            </div>
+                        </div>
+                    </li>
+                    <li class="item-content item-input">
+                        <div class="item-inner">
+                            <button @click="addCustomer" class="button button-raised button-fill" type="submit">SUBMIT</button>
+                        </div>
+                    </li>
+                </ul>
+            </form>
+        </div>
+    </div>
+</template>
+
+<script>
+    return {
+        data: function () {
+            return {
+                title: 'Pelanggan Baru',
+            }
+        },
+        mounted: function () {
+            app.dialog.preloader();
+            app.request.get(path_api + 'pos.php', { mode: 'header_pelanggan_baru' }, function (data) {
+                app.dialog.close();
+                obj_pelanggan = JSON.parse(data);
+                app.form.fillFromData('#form-pelanggan-baru', obj_pelanggan[0]);
+            }, function () {
+                notConnected();
+            });
+            
+            app.dialog.preloader();
+            app.request.get(path_api + 'helper.php', { mode: 'get_meja' }, function (data) {
+                app.dialog.close();
+                obj_meja = JSON.parse(data);
+                $.each(obj_meja, function (index, row_meja) {
+                    $$("#meja").append(
+                    '<option value="' + row_meja.id_meja + '">Meja ' + row_meja.nomor + '</option>'
+                    );
+                });
+            }, function () {
+                notConnected();
+            });
+        },
+        methods: {
+            addCustomer: function () {
+                var form_data = app.form.convertToData('#form-pelanggan-baru');
+                if(!!form_data.meja){
+                    app.request.post(path_api + 'pos.php?mode=pelanggan_baru', { data_user: JSON.parse(localStorage.getItem('user')), data_pelanggan: form_data }, function (response) {
+                        if (response != 0) {
+                            localStorage.setItem("id_penjualan", response);
+                            
+                            var toastSukses = app.toast.create({
+                                text: 'Silahkan pilih menu',
+                                closeTimeout: 2000,
+                                on: {
+                                    opened: function () {
+                                        app.tab.show('#tab-menu');
+                                        router.navigate(router.currentRoute.url, {
+                                            reloadCurrent: true,
+                                            ignoreCache: true,
+                                        });
+                                    }
+                                }
+                            });
+                            toastSukses.open();
+                        } else {
+                            app.dialog.alert("Tambah pelanggan gagal");
+                        }
+                        app.dialog.close('.popover-pelanggan-baru');
+                    }, function () {
+                        notConnected();
+                    });
+                }else{
+                    app.dialog.alert('Field meja tidak boleh kosong.');
+                }
+            },
+        },
+    }
+</script>

@@ -1,0 +1,106 @@
+<template>
+    <div class="page" data-name="laporan">
+        <div class="navbar">
+            <div class="navbar-inner sliding">
+                <div class="left">
+                    <a href="#" class="link back">
+                        <i class="far fa-arrow-left"></i>
+                    </a>
+                </div>
+                <div class="title">{{ title }}</div>
+            </div>
+        </div>
+        
+        <div class="page-content">
+            <div class="toolbar calendar-toolbar color-theme-white no-shadow">
+                <div class="toolbar-inner">
+                    <div class="left">
+                        <a href="#" @click="previousDate" class="link icon-only">
+                            <i class="far fa-arrow-left"></i>
+                        </a>
+                    </div>
+                    <div class="center" style="text-align: center">
+                        <input type="text" readonly="readonly" class="calendar-input" id="calendar-laporan-penjualan" />
+                    </div>
+                    <div class="right">
+                        <a href="#" @click="nextDate" class="link icon-only">
+                            <i class="far fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="data-table card">
+                <table id="table-laporan">
+                    <thead>
+                        <tr>
+                            <th class="numeric-cell" width="20">NO</th>
+                            <th class="label-cell">NOMOR STRUK</th>
+                            <th class="numeric-cell" width="50">TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="body-laporan">
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="toolbar-total">
+            <div class="data-table card" style="margin: 0 8px 0 8px; border-radius: 0;">
+                <table id="table-laporan-total">
+                    <thead id="body-laporan-total">
+                        <tr>
+                            <td class="numeric-cell" style="height:48px;">TOTAL</td>
+                            <td class="numeric-cell" style="height:48px;" width="80">
+                                <span id="total-laporan"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    var tanggal = '';
+    return {
+        data: function () {
+            return {
+                title: 'LAPORAN',
+            }
+        },
+        methods: {
+            previousDate: function () {
+                this.tanggal = new Date(addTanggal(this.tanggal, -1));
+                $$("#calendar-laporan-penjualan").val(getTanggal(this.tanggal));
+                viewReport(setTanggal(this.tanggal));
+            },
+            nextDate: function () {
+                this.tanggal = new Date(addTanggal(this.tanggal, 1));
+                $$("#calendar-laporan-penjualan").val(getTanggal(this.tanggal));
+                viewReport(setTanggal(this.tanggal));;
+            }
+        },
+        on: {
+            pageInit: function (e, page) {
+                this.tanggal = new Date();
+                $$("#calendar-laporan-penjualan").val(getTanggal(this.tanggal));
+                viewReport(setTanggal(this.tanggal));
+
+                $$("#calendar-laporan-penjualan").on("change", function () {
+                    this.tanggal = new Date($$("#calendar-laporan-penjualan").val());
+                    $$("#calendar-laporan-penjualan").val(getTanggal(this.tanggal));
+                    viewReport(setTanggal(this.tanggal));
+                });
+            },
+            pageBeforeIn: function (e, page) {
+                var calendarLaporan = app.calendar.create({
+                    inputEl: '#calendar-laporan-penjualan',
+                    openIn: 'customModal',
+                    footer: true
+                });
+            },
+        }
+    }
+</script>

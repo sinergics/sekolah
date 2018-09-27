@@ -1,0 +1,145 @@
+<template>
+    <div class="page">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <div class="left">
+                    <a href="/absen/" data-force="true" data-ignore-cache="true" class="link back">
+                        <i class="far fa-arrow-left"></i>
+                    </a>
+                </div>
+                <div class="title">{{ title }}</div>
+                <div class="right">
+                    <a class="link icon-only searchbar-enable" data-searchbar=".searchbar-pegawai">
+                        <i class="far fa-search"></i>
+                    </a>
+                </div>
+                <form data-search-container=".search-list" data-search-in=".item-title" class="searchbar searchbar-expandable searchbar-pegawai searchbar-init">
+                    <div class="searchbar-inner">
+                        <div class="searchbar-input-wrap">
+                            <input type="search" placeholder="Cari Pegawai" />
+                            <i class="searchbar-icon"></i>
+                            <span class="input-clear-button"></span>
+                        </div>
+                        <span class="searchbar-disable-button">Cancel</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="page-content">
+            <div class="block searchbar-hide-on-search">
+                <p>Tanggal Absen: {{ js 'return getTanggal(new Date())' }}</p>
+            </div>
+            <div class="list search-list accordion-list searchbar-found">
+                <ul id="list-pegawai">
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    return {
+        data: function () {
+            return {
+                title: 'Daftar Pegawai',
+                data_user: localStorage.getItem('user')
+            }
+        },
+        on: {
+            pageInit: function (e, page) {
+                app.dialog.preloader();
+                $$("#list-pegawai").empty();
+                app.request.get(path_api + 'absen.php', { mode: 'lihat_pegawai' }, function (data) {
+                    app.dialog .close();
+                    obj_pegawai = JSON.parse(data);
+                    $.each(obj_pegawai.data, function (index, row_pegawai) {
+
+                        var caption_masuk = "ABSEN";
+                        var caption_pulang = "ABSEN";
+
+                        if (row_pegawai['data_absen'].id_absen) {
+                            caption_masuk = row_pegawai['data_absen'].jam_masuk;
+                        }
+
+                        if (row_pegawai['data_absen'].jam_pulang != "00:00" && row_pegawai['data_absen'].jam_pulang != "ABSEN") {
+                            caption_pulang = row_pegawai['data_absen'].jam_pulang;
+                        }
+
+                        $$("#list-pegawai").append(
+                            '<li class="accordion-item">' +
+                                '<a href="#" class="item-content item-link">' +
+                                    '<div class="item-inner">' +
+                                        '<div class="item-title">' + row_pegawai.namaUser + '</div>' +
+                                    '</div>' +
+                                '</a>' +
+                                '<div class="accordion-item-content">' +
+                                    '<div class="table-scrollable"><table class="table table-bordered table-hover"><thead>' +
+                                        '<tr><th width="50%">MASUK</th><th width="50%">PULANG</th></tr>' +
+                                        '<tr><th width="50%"><button id="masuk_'+ row_pegawai.idPegawai +'" class="button button-small button-fill">' + caption_masuk + '</button></th><th width="50%"><button id="pulang_' + row_pegawai.idPegawai +'" class="button button-small button-fill">' + caption_pulang + '</button></th></tr>' +
+                                    '</thead></table></div>' +
+                                '</div>' +
+                            '</li>'
+                        );
+
+                        if (row_pegawai['data_absen'].id_absen) {
+                            $('#masuk_' + row_pegawai.idPegawai + '').attr("class", "button button-small button-fill disabled");
+                        }
+                        if (row_pegawai['data_absen'].jam_pulang != "00:00" && row_pegawai['data_absen'].jam_pulang != "ABSEN") {
+                            $('#pulang_' + row_pegawai.idPegawai + '').attr("class", "button button-small button-fill disabled");
+                        }
+
+                        $$('#masuk_' + row_pegawai.idPegawai +'').on('click', function () {
+                            app.dialog.password('Masukan password', 'ABSEN MASUK', function (password) {
+                                app.dialog.preloader();
+                                app.request.post(path_api + 'absen.php?mode=input_absen&aksi=absen_masuk', { password: password, data_pegawai: row_pegawai, data_user: JSON.parse(localStorage.getItem('user')) }, function (data) {
+                                    app.dialog.close();
+                                    obj_data = JSON.parse(data);
+                                    if (obj_data.error == false) {
+                                        var date = new Date();
+                                        var jam = addNol(date.getHours());
+                                        var menit = addNol(date.getMinutes());
+                                        $('#masuk_' + row_pegawai.idPegawai +'').attr("class", "button button-small button-fill disabled");
+                                        $('#masuk_' + row_pegawai.idPegawai + '').html(jam +':'+menit);
+                                    } else {
+                                        app.dialog.alert(obj_data.message, "Warning");
+                                    }
+                                }, function () {
+                                    notConnected();
+                                });
+                            });
+                        });
+
+                        $$('#pulang_' + row_pegawai.idPegawai + '').on('click', function () {
+                            app.dialog.password('Masukan password', 'ABSEN PULANG', function (password) {
+                                app.dialog.preloader();
+                                app.request.post(path_api + 'absen.php?mode=input_absen&aksi=absen_pulang', { password: password, data_pegawai: row_pegawai, data_user: JSON.parse(localStorage.getItem('user')) }, function (data) {
+                                    app.dialog.close();
+                                    obj_data = JSON.parse(data);
+                                    if (obj_data.error == false) {
+                                        var date = new Date();
+                                        var jam = addNol(date.getHours());
+                                        var menit = addNol(date.getMinutes());
+                                        $('#pulang_' + row_pegawai.idPegawai + '').attr("class", "button button-small button-fill disabled");
+                                        $('#pulang_' + row_pegawai.idPegawai + '').html(jam + ':' + menit);
+                                    } else {
+                                        app.dialog.alert(obj_data.message, "Warning");
+                                    }
+                                }, function () {
+                                    notConnected();
+                                });
+                            });
+                        });
+                    });
+                }, function () {
+                    notConnected();
+                });
+            },
+            pageAfterOut: function (e, page) {
+                this.tanggal = new Date();
+                $$("#calendar-absen").val(getTanggal(this.tanggal));
+                viewAbsen(setTanggal(this.tanggal));
+            },
+        }
+    }
+</script>

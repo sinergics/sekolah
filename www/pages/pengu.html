@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="default">
+	<meta name="theme-color" content="#2196f3">
+	<meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap:">
+	
+	<title>FAJARHIDAYAH</title>
+	
+	<link rel="shortcut icon" href="assets/img/favicon.ico" />
+	<link rel="stylesheet" href="assets/css/app.css" />
+	<link rel="stylesheet" href="assets/css/framework7.css" />
+	<link rel="stylesheet" href="assets/css/font-awesome.min.css" />
+	<link rel="stylesheet" href="path/to/framework7-icons.css">
+</head>
+<body class="color-theme-blue">
+	<div id="app">
+		<div class="statusbar" >
+			<input type="hidden" id="get_ip_address" name="get_ip_address" />
+		</div>
+		<div class="panel panel-left panel-cover panel-control" >
+			<ul>
+				<li>
+					<div class="photos">
+						<img id="image-login" src="" alt="">
+						<h3 id="nama-login">&nbsp;</h3>
+					</div>
+				</li>
+				<li>
+					<a class="panel-close" href="/">
+						<i class="fal fa-home"></i>Home
+					</a>
+				</li>
+				<li>
+					<a class="panel-close" href="/profile/">
+						<i class="fal fa-id-card"></i>PROFIL
+					</a>
+				</li>
+				<li>
+					<a class="panel-close" href="/pos/">
+						<i class="fal fa-calculator"></i>
+						POS
+					</a>
+				</li>
+				<li>
+					<a class="panel-close" href="/laporan/">
+						<i class="fal fa-chart-bar"></i>
+						Laporan
+					</a>
+				</li>
+				<li>
+					<a class="panel-close" href="#" id="logout-button">
+						<i class="fal fa-sign-out"></i>
+						Logout
+					</a>
+				</li>
+			</ul>
+		</div>
+		<div class="view view-main">
+			<div class="page" data-name="home">
+				<div class="navbar">
+					<div class="navbar-inner">
+						<div class="right"></div>
+						<div class="left">
+							<a href="#" class="link icon-only panel-open" data-panel="left" style="color: white;">
+								<i class="fal fa-bars"></i>
+							</a>
+							<div class="title sliding">Fajar Hidayah</div>
+						</div>
+
+
+					</div>
+				</div>
+				<div class="toolbar toolbar-bottom">
+					<div class="toolbar-inner">
+						<!-- Toolbar links -->
+						<div class="toolbar-inner">
+							<a href="#" class="link"><i class="f7-icons size-22">info</i>Info<</a>
+														<a href="#" class="link"><i class="f7-icons size-22">more</i><font color="red">Contact</font></a>
+							<a href="#" class="link"><i class="f7-icons size-22">more</i>Contact</a>
+							<a href="#" class="link"><i class="f7-icons size-22">more</i>Contact</a>
+
+							<a href="#" class="link"><i class="f7-icons size-22">more</i>Contact</a>
+						</div>
+					</div>
+				</div>
+				<div class="page-content">
+					<div class="swiper-container swiper-berita">
+						<div class="swiper-wrapper">
+							
+						</div>
+
+					</div>
+					<div class="menu text-align-center">
+						<div class="row">
+							<div class="col-50">
+								<a href="/profile/" class="entry">
+									<i class="fal fa-id-card"></i>
+									<h5>PROFIL</h5>
+								</a>
+							</div>
+							<div class="col-50">
+								<a href="/pos/" class="entry">
+									<i class="fal fa-calculator"></i>
+									<h5>POS</h5>
+								</a>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-50">
+								<a href="/laporan/" class="entry">
+									<i class="fal fa-chart-bar"></i>
+									<h5>LAPORAN</h5>
+								</a>
+							</div>
+							<div class="col-50">
+								<a href="/berita/" class="entry ">
+									<i class="fal fa-newspaper "></i>
+									<h5>BERITA</h5>
+								</a>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-50">
+								<a href="/absen/" class="entry">
+									<i class="fal fa-calendar-check"></i>
+									<h5>ABSEN</h5>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="assets/js/jquery-3.3.1.min.js"></script>
+	<script src="assets/js/framework7.js"></script>
+	<script src="assets/js/routes.js"></script>
+	<script src="assets/js/app.js"></script>
+	<script src="assets/js/model.js"></script>
+</body>
+</html>
